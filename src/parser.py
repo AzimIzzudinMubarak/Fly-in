@@ -39,6 +39,7 @@ def _parse_metadata(raw_meta: str, line_number: int) -> Dict[str, str]:
             raise ValueError(
                 f"Line {line_number}: Duplicate metadata '{key}'"
             )
+        result[key] = value
 
     return result
 
@@ -151,7 +152,7 @@ def parse_file(filepath: str) -> MapData:
         if not line or line.startswith("#"):
             continue
 
-        # Check nb_drones
+        # Parse nb_drones
         if line.startswith("nb_drones:"):
             if nb_drones_seen:
                 raise ValueError(f"Line {i}: Duplicate nb_drones.")
@@ -163,7 +164,7 @@ def parse_file(filepath: str) -> MapData:
         if not nb_drones_seen:
             raise ValueError("First line must be 'nb_drones: <number>'.")
 
-        # Check hub
+        # Parse hub
         if line.startswith(("start_hub:", "hub:", "end_hub:")):
             prefix, raw_val_hub = line.split(":", 1)
 
@@ -191,7 +192,7 @@ def parse_file(filepath: str) -> MapData:
             zone_list.append(zone)
             continue
 
-        # Check connection
+        # Parse connection
         if line.startswith("connection:"):
             _, raw_val_connection = line.split(":", 1)
             connection = _parse_connection(raw_val_connection, i)
@@ -204,7 +205,8 @@ def parse_file(filepath: str) -> MapData:
                     )
 
             sorted_connection = sorted([connection.zone_a, connection.zone_b])
-            conn: Tuple[str, str] = (sorted_connection[0], sorted_connection[1])
+            conn: Tuple[str, str] = (sorted_connection[0],
+                                     sorted_connection[1])
 
             if conn in seen_connection:
                 raise ValueError(
