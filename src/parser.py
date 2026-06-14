@@ -15,6 +15,12 @@ def parse_arguments() -> argparse.Namespace:
         default="maps/challenger/01_the_impossible_dream.txt",
         help="Path to map description file."
     )
+    parser.add_argument(
+        "--k-paths",
+        type=int,
+        default=3,
+        help="Number of candidate shortest paths to distribute drones across."
+    )
     return parser.parse_args()
 
 
