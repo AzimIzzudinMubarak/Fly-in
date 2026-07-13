@@ -12,9 +12,9 @@ class Graph:
             z.name: [] for z in map_data.zones
         }
         for conn in map_data.connections:
-            cap = conn.max_link_capacity
-            self.adjacency[conn.zone_a].append((conn.zone_b, cap))
-            self.adjacency[conn.zone_b].append((conn.zone_a, cap))
+            capacity = conn.max_link_capacity
+            self.adjacency[conn.zone_a].append((conn.zone_b, capacity))
+            self.adjacency[conn.zone_b].append((conn.zone_a, capacity))
 
         self.start: str = next(z.name for z in map_data.zones if z.is_start)
         self.end: str = next(z.name for z in map_data.zones if z.is_end)
@@ -27,7 +27,14 @@ class Graph:
                 "Cannot compute movement cost for blocked zone "
                 f"'{destination}'"
             )
-        return 2 if zone_type == "restricted" else 1
+        if zone_type == "restricted":
+            return 2
+        return 1
+
+    def pathfinding_weight(self, destination: str) -> float:
+        if self.zones[destination].zone_type == "priority":
+            return 0.99
+        return self.movement_cost(destination)
 
     def neighbors(self, zone_name: str) -> List[Tuple[str, int]]:
         return [

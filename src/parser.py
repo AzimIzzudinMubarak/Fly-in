@@ -15,12 +15,6 @@ def parse_arguments() -> argparse.Namespace:
         default="maps/challenger/01_the_impossible_dream.txt",
         help="Path to map description file."
     )
-    parser.add_argument(
-        "--k-paths",
-        type=int,
-        default=3,
-        help="Number of candidate shortest paths to distribute drones across."
-    )
     return parser.parse_args()
 
 
@@ -190,7 +184,7 @@ def parse_file(filepath: str) -> MapData:
 
             zone = _parse_zone(prefix, raw_val_hub, i)
 
-            if zone_names in zone_names:
+            if zone.name in zone_names:
                 raise ValueError(
                     f"Line {i}: Duplicate zone name '{zone.name}'"
                 )
