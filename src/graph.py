@@ -13,8 +13,10 @@ class Graph:
         }
         for conn in map_data.connections:
             capacity = conn.max_link_capacity
-            self.adjacency[conn.zone_a].append((conn.zone_b, capacity))
-            self.adjacency[conn.zone_b].append((conn.zone_a, capacity))
+            if self.zones[conn.zone_b].zone_type != "blocked":
+                self.adjacency[conn.zone_a].append((conn.zone_b, capacity))
+            if self.zones[conn.zone_a].zone_type != "blocked":
+                self.adjacency[conn.zone_b].append((conn.zone_a, capacity))
 
         self.start: str = next(z.name for z in map_data.zones if z.is_start)
         self.end: str = next(z.name for z in map_data.zones if z.is_end)
@@ -35,10 +37,3 @@ class Graph:
         if self.zones[destination].zone_type == "priority":
             return 0.99
         return self.movement_cost(destination)
-
-    def neighbors(self, zone_name: str) -> List[Tuple[str, int]]:
-        return [
-            (neighbor, cap)
-            for neighbor, cap in self.adjacency[zone_name]
-            if self.zones[neighbor].zone_type != "blocked"
-        ]

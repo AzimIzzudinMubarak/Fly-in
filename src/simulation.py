@@ -68,7 +68,7 @@ class Simulation:
         current_dist = self.dist[zone_name]
         candidates = [
             (neighbor, cap)
-            for neighbor, cap in self.graph.neighbors(zone_name)
+            for neighbor, cap in self.graph.adjacency[zone_name]
             if self.dist[neighbor] != float("inf")
             and self.dist[neighbor] < current_dist
         ]

@@ -1,21 +1,7 @@
-import argparse
 import re
 from typing import Dict, Optional, Set, Tuple, List
 
 from src.models import MapData, ZoneData, ConnectionData
-
-
-def parse_arguments() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Fly-In: Route drones from start to end in fewest turns.",
-    )
-    parser.add_argument(
-        "--map",
-        type=str,
-        default="maps/challenger/01_the_impossible_dream.txt",
-        help="Path to map description file."
-    )
-    return parser.parse_args()
 
 
 _META_RE = re.compile(r"\[([^\]]*)\]")

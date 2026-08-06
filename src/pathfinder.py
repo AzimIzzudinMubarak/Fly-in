@@ -17,7 +17,7 @@ def compute_distances_from_end(graph: Graph, end: str) -> Dict[str, float]:
 
         unvisited.remove(current)
 
-        for neighbor, _link_cap in graph.neighbors(current):
+        for neighbor, _link_cap in graph.adjacency[current]:
             if neighbor not in unvisited:
                 continue
 
