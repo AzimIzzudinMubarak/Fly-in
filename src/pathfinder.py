@@ -3,7 +3,7 @@ from typing import Dict
 from src.graph import Graph
 
 
-def compute_distances_from_end(graph: Graph, end: str) -> Dict[str, float]:
+def compute_distances(graph: Graph, end: str) -> Dict[str, float]:
     dist: Dict[str, float] = {z: float("inf") for z in graph.zones}
     dist[end] = 0
 
@@ -17,7 +17,7 @@ def compute_distances_from_end(graph: Graph, end: str) -> Dict[str, float]:
 
         unvisited.remove(current)
 
-        for neighbor, _link_cap in graph.adjacency[current]:
+        for neighbor, _ in graph.adjacency[current]:
             if neighbor not in unvisited:
                 continue
 

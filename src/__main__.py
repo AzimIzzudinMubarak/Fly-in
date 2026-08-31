@@ -74,7 +74,8 @@ def main() -> None:
 
     renderer = SimulationRenderer(graph)
 
-    print("\n------------------------------")
+    print("\n------------------------------\n")
+    renderer.print_all_zones()
     print("Result: ")
     for line in log:
         print(renderer.render_line(line))

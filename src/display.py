@@ -12,29 +12,21 @@ class ColorPalette:
     """
 
     _NAMED_CODES: Dict[str, int] = {
-        "black": 240,
-        "white": 255,
-        "gray": 245,
-        "grey": 245,
-        "red": 196,
         "green": 34,
-        "blue": 33,
         "yellow": 226,
+        "red": 196,
+        "blue": 33,
         "orange": 208,
+        "cyan": 51,
         "purple": 129,
         "magenta": 201,
-        "cyan": 51,
+        "gold": 220,
         "brown": 94,
         "maroon": 88,
         "darkred": 124,
-        "gold": 220,
         "crimson": 161,
         "violet": 135,
-        "lime": 118,
-        "pink": 213,
-        "teal": 30,
-        "tan": 180,
-        "silver": 250,
+        "black": 240,
     }
 
     def code_for(self, color_name: Optional[str]) -> Optional[int]:
@@ -46,6 +38,8 @@ class ColorPalette:
         normalized = color_name.strip().lower()
         if normalized in self._NAMED_CODES:
             return self._NAMED_CODES[normalized]
+        else:
+            return None
 
     def colorize(self, text: str, color_name: Optional[str]) -> str:
         """Wrap `text` in the ANSI escape for `color_name`, if any."""
@@ -64,11 +58,12 @@ class SimulationRenderer:
     def __init__(
         self,
         graph: Graph,
-        palette: Optional[ColorPalette] = None,
     ) -> None:
         self.graph = graph
-        self.palette = palette if palette is not None else ColorPalette()
+        self.palette = ColorPalette()
         self.enabled = self._color_enabled()
+
+        self._rainbow_codes = [196, 208, 220, 34, 33, 129, 201]
 
     @staticmethod
     def _color_enabled() -> bool:
@@ -90,21 +85,38 @@ class SimulationRenderer:
         colored_zones = [self._render_zone(name) for name in zone_parts]
         return "-".join([drone_part, *colored_zones])
 
+    def _apply_rainbow_text(self, text: str) -> str:
+        """Applies a character-by-character rainbow color sequence."""
+        rainbow_chars = []
+        for i, char in enumerate(text):
+            if char.isspace():
+                rainbow_chars.append(char)
+                continue
+            code = self._rainbow_codes[i % len(self._rainbow_codes)]
+            rainbow_chars.append(f"\033[38;5;{code}m{char}")
+        return "".join(rainbow_chars) + "\033[0m"
+
     def _render_zone(self, zone_name: str) -> str:
         if not self.enabled:
             return zone_name
         zone: Optional[ZoneData] = self.graph.zones.get(zone_name)
         color = zone.color if zone is not None else None
+
+        if color == "rainbow":
+            return self._apply_rainbow_text(zone_name)
+
         return self.palette.colorize(zone_name, color)
 
-    def print_legend(self) -> None:
+    def print_all_zones(self) -> None:
         """
         Print every zone once, colored, before the turn log.
         """
-        print("Zone legend:")
+        print("Zones:")
         for name, zone in sorted(self.graph.zones.items()):
             label = f"{name} ({zone.zone_type})"
             if self.enabled:
+                if zone.color == "rainbow":
+                    label = self._apply_rainbow_text(label)
                 label = self.palette.colorize(label, zone.color)
             print(f"  {label}")
         print()

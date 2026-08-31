@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Tuple
 
 from src.graph import Graph
-from src.pathfinder import compute_distances_from_end
+from src.pathfinder import compute_distances
 
 
 def _edge_label(a: str, b: str) -> str:
@@ -15,7 +15,7 @@ def _edge_key(a: str, b: str) -> str:
 
 
 @dataclass
-class DroneState:
+class DroneData:
     """
     Runtime state for a single drone.
     """
@@ -36,7 +36,7 @@ class Simulation:
         self.turn: int = 0
         self.log: List[str] = []
 
-        self.dist: Dict[str, float] = compute_distances_from_end(
+        self.dist: Dict[str, float] = compute_distances(
             graph, graph.end
         )
 
@@ -45,8 +45,8 @@ class Simulation:
                 f"No path found from '{graph.start}' to '{graph.end}'"
             )
 
-        self.drones: List[DroneState] = [
-            DroneState(drone_id=i + 1, current_zone=graph.start)
+        self.drones: List[DroneData] = [
+            DroneData(drone_id=i + 1, current_zone=graph.start)
             for i in range(graph.nb_drones)
         ]
 
@@ -60,11 +60,6 @@ class Simulation:
         return all(d.delivered for d in self.drones)
 
     def _ranked_candidates(self, zone_name: str) -> List[Tuple[str, int]]:
-        """
-        Return this zone's neighbors sorted by distance-to-end, cheapest
-        first — but ONLY neighbors that make genuine progress toward the
-        end (dist[neighbor] < dist[zone_name]).
-        """
         current_dist = self.dist[zone_name]
         candidates = [
             (neighbor, cap)
@@ -118,7 +113,7 @@ class Simulation:
 
             candidates = self._ranked_candidates(d.current_zone)
 
-            for next_zone, _link_cap_unused in candidates:
+            for next_zone, _ in candidates:
                 cost = self.graph.movement_cost(next_zone)
                 edge = _edge_label(d.current_zone, next_zone)
                 edge_key = _edge_key(d.current_zone, next_zone)
@@ -126,8 +121,8 @@ class Simulation:
                 # Zone capacity check
                 if next_zone != self.graph.end:
                     zone = self.graph.zones[next_zone]
-                    current_count = len(zone_occupancy.get(next_zone, []))
-                    if current_count >= zone.max_drones:
+                    zone_count = len(zone_occupancy.get(next_zone, []))
+                    if zone_count >= zone.max_drones:
                         continue
 
                 # Link capacity check
@@ -143,8 +138,8 @@ class Simulation:
                 # This candidate works — commit the move.
                 if d.current_zone in zone_occupancy:
                     zone_occupancy[d.current_zone] = [
-                        did for did in zone_occupancy[d.current_zone]
-                        if did != d.drone_id
+                        droneid for droneid in zone_occupancy[d.current_zone]
+                        if droneid != d.drone_id
                     ]
                 edge_occupancy[edge_key] = edge_count + 1
 
@@ -166,6 +161,6 @@ class Simulation:
                 break
 
         movements.sort(key=lambda m: m[0])
-        line = " ".join(f"D{did}-{label}" for did, label in movements)
+        line = " ".join(f"D{id}-{label}" for id, label in movements)
         self.log.append(line)
         return line
