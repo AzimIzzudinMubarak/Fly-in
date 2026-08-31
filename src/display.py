@@ -30,8 +30,7 @@ class ColorPalette:
     }
 
     def code_for(self, color_name: Optional[str]) -> Optional[int]:
-        """Return the xterm-256 code for a zone's color, or None if
-        no color was specified for that zone."""
+        """Return the xterm-256 code for a zone's color"""
         if not color_name:
             return None
 
@@ -42,7 +41,7 @@ class ColorPalette:
             return None
 
     def colorize(self, text: str, color_name: Optional[str]) -> str:
-        """Wrap `text` in the ANSI escape for `color_name`, if any."""
+        """Wrap `text` in the ANSI escape for `color_name`."""
         code = self.code_for(color_name)
         if code is None:
             return text

@@ -83,16 +83,16 @@ def main() -> None:
     print(f"\nNumber of turns: {len(log)}")
     print("------------------------------")
 
-    watch = input(
-        "\nWatch this as an animated pygame window? (y/n): "
-    ).strip().lower()
-    if watch == "y":
-        try:
-            from src.app import SimulationApp
-        except ImportError:
-            print("pygame-ce isn't installed. Run: pip install pygame-ce")
-        else:
-            SimulationApp(graph, log).run()
+    # watch = input(
+    #     "\nWatch this as an animated pygame window? (y/n): "
+    # ).strip().lower()
+    # if watch == "y":
+    #     try:
+    #         from src.app import SimulationApp
+    #     except ImportError:
+    #         print("pygame-ce isn't installed. Run: pip install pygame-ce")
+    #     else:
+    #         SimulationApp(graph, log).run()
 
 
 if __name__ == "__main__":
