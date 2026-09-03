@@ -160,6 +160,29 @@ class Simulation:
 
                 break
 
+        # print(f"\nTurn {self.turn}")
+
+        # for name, zone in self.graph.zones.items():
+        #     used = len(zone_occupancy.get(name, []))
+        #     print(f"Zone {name}: {used}/{zone.max_drones} drones")
+        # print()
+
+        # seen = set()
+
+        # for start, neighbors in self.graph.adjacency.items():
+        #     for end, capacity in neighbors:
+        #         key = tuple(sorted((start, end)))
+
+        #         if key in seen:
+        #             continue
+
+        #         seen.add(key)
+
+        #         edge_name = f"{key[0]}-{key[1]}"
+        #         used = edge_occupancy.get(edge_name, 0)
+        #         print(f"Connection {edge_name}: {used}/{capacity} "
+        #               "capacity used")
+
         movements.sort(key=lambda m: m[0])
         line = " ".join(f"D{id}-{label}" for id, label in movements)
         self.log.append(line)
